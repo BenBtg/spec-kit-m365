@@ -1,0 +1,41 @@
+# ============================================================================
+# spec-kit-m365 Configuration
+# ============================================================================
+# Copy this file to your project at:
+#   .specify/extensions/m365/m365-config.yml
+# and fill in your organization-specific values.
+# ============================================================================
+
+# Default team and channel for thread-based commands.
+# These are used when no --teamId or --channelId is provided to the command.
+# You can find IDs by running:
+#   m365 teams team list --joined -o json
+#   m365 teams channel list --teamId <teamId> -o json
+defaults:
+  # teamId: ""
+  # teamName: ""
+  # channelId: ""
+  # channelName: ""
+
+  # How far back to pull messages when no --since flag is specified.
+  # ISO 8601 duration or date. Examples: "7d", "2026-04-01T00:00:00Z"
+  # M365 CLI supports up to 8 months of history.
+  since: "7d"
+
+# Output settings for generated specifications.
+output:
+  # Directory where specs are created (relative to project root).
+  specDirectory: ".specify/specs/"
+
+  # Set to "auto" to detect the next available spec number,
+  # or specify a number to use as the prefix (e.g., "042").
+  specNumber: "auto"
+
+# Meeting-specific settings.
+meetings:
+  # Temporary directory for downloading transcript VTT files.
+  # Use "system" for the OS temp directory, or specify an absolute path.
+  transcriptTempDir: "system"
+
+  # Whether to clean up downloaded transcript files after processing.
+  cleanupTranscripts: true

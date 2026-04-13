@@ -1,0 +1,23 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local config (user-specific values)
+m365-config.yml
+
+# Logs
+*.log
+
+# Node (if using any tooling)
+node_modules/
+
+# Temp files
+*.tmp
+*.vtt

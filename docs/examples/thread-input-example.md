@@ -1,0 +1,252 @@
+# Example: Teams Thread → Spec Kit Specification
+
+This example shows how a Teams channel conversation is transformed into a structured specification.
+
+---
+
+## Source: Teams Channel Messages (JSON)
+
+The following is a sample of what the M365 CLI returns from `m365 teams message list`:
+
+```json
+[
+  {
+    "id": "1712900400000",
+    "replyToId": null,
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T10:00:00Z",
+    "from": {
+      "user": { "displayName": "Sarah Chen", "id": "user-001" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Hey team — we need to finalize the approach for the new notification preferences feature. Users have been asking for more control over what emails and push notifications they receive. Let's discuss here and make a decision by EOW."
+    },
+    "importance": "high"
+  },
+  {
+    "id": "1712900400001",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T10:15:00Z",
+    "from": {
+      "user": { "displayName": "Marcus Johnson", "id": "user-002" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Good call. I think we should support per-category toggles (marketing, transactional, system alerts) plus a frequency option (instant, daily digest, weekly digest). We could also let users set quiet hours."
+    }
+  },
+  {
+    "id": "1712900400002",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T10:22:00Z",
+    "from": {
+      "user": { "displayName": "Priya Patel", "id": "user-003" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Per-category toggles make sense. I'd push back on quiet hours for MVP though — that adds complexity with timezone handling. Can we do that in a later phase?"
+    }
+  },
+  {
+    "id": "1712900400003",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T10:30:00Z",
+    "from": {
+      "user": { "displayName": "Sarah Chen", "id": "user-001" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Agreed — let's defer quiet hours to phase 2. For MVP: per-category toggles + frequency selection. @Marcus does the backend support per-category filtering already?"
+    }
+  },
+  {
+    "id": "1712900400004",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T11:05:00Z",
+    "from": {
+      "user": { "displayName": "Marcus Johnson", "id": "user-002" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "The notification service already tags messages by category. We'd need to add a user preferences table and a new API endpoint. Frequency/digest is trickier — we'd need a scheduled job to batch notifications. I'd estimate 2 sprints for the full thing."
+    }
+  },
+  {
+    "id": "1712900400005",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T11:20:00Z",
+    "from": {
+      "user": { "displayName": "Priya Patel", "id": "user-003" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "What about email vs push? Should users be able to toggle channels independently? Like get push for system alerts but email digest for marketing?"
+    }
+  },
+  {
+    "id": "1712900400006",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T11:35:00Z",
+    "from": {
+      "user": { "displayName": "Sarah Chen", "id": "user-001" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Great point. Let's do per-channel AND per-category toggles. So the matrix is: [category] × [channel (email/push)] × [frequency]. That gives users full control."
+    }
+  },
+  {
+    "id": "1712900400007",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T11:40:00Z",
+    "from": {
+      "user": { "displayName": "Marcus Johnson", "id": "user-002" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "That works. Let's go with that. I'll start on the DB schema and API design. One question — should there be a 'reset to defaults' option?"
+    }
+  },
+  {
+    "id": "1712900400008",
+    "replyToId": "1712900400000",
+    "messageType": "message",
+    "createdDateTime": "2026-04-09T14:00:00Z",
+    "from": {
+      "user": { "displayName": "Sarah Chen", "id": "user-001" }
+    },
+    "body": {
+      "contentType": "text",
+      "content": "Yes, include a 'Reset to defaults' button. Also, we need to define what the defaults are — I'd say all channels ON, frequency instant for transactional/system, daily digest for marketing. Confirmed: MVP scope is per-category × per-channel toggles + frequency + reset to defaults. Quiet hours deferred to phase 2."
+    }
+  }
+]
+```
+
+---
+
+## Generated Output: `spec.md`
+
+The following is the spec generated by `/speckit.m365.thread` from the conversation above:
+
+```markdown
+---
+Feature Branch: 014-notification-preferences
+Created: 2026-04-09
+Status: Draft
+Source:
+  type: teams-thread
+  team: "Product Engineering"
+  channel: "Backend"
+  threadId: "1712900400000"
+  dateRange: "2026-04-09T10:00:00Z to 2026-04-09T14:00:00Z"
+  participants:
+    - "Sarah Chen"
+    - "Marcus Johnson"
+    - "Priya Patel"
+  messageCount: 9
+  extractedAt: "2026-04-09T15:30:00Z"
+---
+
+# Feature Specification: Notification Preferences
+
+## User Scenarios & Testing
+
+### User Story 1: Per-Category Notification Toggles
+**Priority:** P1
+**As a** user, **I want** to toggle notifications on or off for each notification category (marketing, transactional, system alerts), **so that** I only receive notifications that are relevant to me.
+
+#### Acceptance Scenarios
+- **Given** I am on the notification preferences page, **When** I toggle off "Marketing" for email, **Then** I no longer receive marketing emails but still receive marketing push notifications if that toggle is on.
+- **Given** I have all categories enabled, **When** I toggle off "System Alerts" for push, **Then** I stop receiving system alert push notifications immediately.
+
+#### Edge Cases
+- User disables all notification categories and channels — should show a warning that they will receive no notifications.
+- New notification categories added in the future should default to the system default settings.
+
+### User Story 2: Notification Frequency Selection
+**Priority:** P1
+**As a** user, **I want** to choose a notification frequency (instant, daily digest, weekly digest) for each category and channel combination, **so that** I can reduce notification volume without missing important information.
+
+#### Acceptance Scenarios
+- **Given** I set "Marketing" email to "Daily Digest", **When** a marketing notification is generated, **Then** it is batched and delivered in a single email at the configured digest time.
+- **Given** I set "Transactional" push to "Instant", **When** a transactional event occurs, **Then** I receive a push notification immediately.
+
+#### Edge Cases
+- Digest batching across timezone boundaries — digest should be delivered based on the user's local time.
+- Empty digests — if no notifications occurred in the period, no digest email should be sent.
+
+### User Story 3: Reset to Defaults
+**Priority:** P2
+**As a** user, **I want** to reset my notification preferences to the system defaults, **so that** I can undo custom changes without manually reconfiguring each setting.
+
+#### Acceptance Scenarios
+- **Given** I have customized multiple notification settings, **When** I click "Reset to Defaults", **Then** all settings revert to: all channels ON, instant frequency for transactional/system alerts, daily digest for marketing.
+- **Given** I click "Reset to Defaults", **When** the reset completes, **Then** I see a confirmation message and the UI reflects the default values.
+
+#### Edge Cases
+- Confirmation prompt before reset to prevent accidental data loss.
+
+## Requirements
+
+### Functional Requirements
+- **FR-001:** The system shall provide per-category notification toggles for each delivery channel (email, push).
+- **FR-002:** Notification categories shall include at minimum: Marketing, Transactional, and System Alerts.
+- **FR-003:** Users shall be able to select a frequency for each category × channel combination: Instant, Daily Digest, or Weekly Digest.
+- **FR-004:** A scheduled job shall batch notifications for users who selected digest frequency and deliver them at the appropriate interval.
+- **FR-005:** The system shall provide a "Reset to Defaults" action that restores all preferences to system defaults.
+- **FR-006:** Default notification settings shall be: all channels ON, instant for transactional and system alerts, daily digest for marketing.
+- **FR-007:** A new user preferences table shall store notification settings per user.
+- **FR-008:** A new API endpoint shall support reading and updating notification preferences.
+
+### Key Entities
+- **NotificationCategory:** A classification of notifications (marketing, transactional, system alerts)
+- **DeliveryChannel:** The medium for notification delivery (email, push)
+- **NotificationPreference:** A user's setting for a specific category × channel combination, including enabled/disabled and frequency
+- **DigestJob:** A scheduled process that batches and sends digest notifications
+
+## Success Criteria
+- Users can independently control notification settings for each category and channel combination
+- Digest notifications are delivered on schedule with correct batching
+- Reset to defaults restores all settings correctly
+- Backend supports the preference matrix without performance degradation
+
+## Assumptions
+- The existing notification service already tags messages by category (confirmed by Marcus)
+- Email and push are the only delivery channels for MVP
+- Timezone for digest delivery will use the user's profile timezone setting
+- The scheduled digest job infrastructure exists or can be set up within the 2-sprint estimate
+
+## Open Questions & Unresolved Items
+
+<!-- Items flagged from the source conversation that need clarification -->
+- [ ] What time should daily/weekly digests be delivered? (Not discussed in thread)
+- [ ] Should there be an "unsubscribe from all" master toggle in addition to per-category controls?
+- [ ] How should we handle the UI for the category × channel × frequency matrix without overwhelming the user?
+
+## Conversation Context
+
+<!-- Key discussion points that informed this spec but are not requirements -->
+- Quiet hours feature was discussed but explicitly deferred to Phase 2
+- Marcus estimated 2 sprints for the full implementation including the digest scheduling job
+- The notification service already supports category tagging, reducing backend effort for the toggle feature
+```
+
+---
+
+## Summary
+
+The thread command extracted:
+- **3 user stories** (2× P1, 1× P2)
+- **8 functional requirements**
+- **4 key entities**
+- **3 open questions** (items not resolved in the thread)
+- Clear separation of MVP scope (toggles + frequency + reset) from deferred scope (quiet hours)

@@ -1,0 +1,46 @@
+schema_version: "1.0"
+
+extension:
+  id: "m365"
+  name: "Microsoft 365 Integration"
+  version: "1.0.0"
+  description: "Convert Microsoft Teams conversations and meeting transcripts into structured Spec Kit specifications using AI-powered summarization."
+  author: "spec-kit-m365"
+  repository: "https://github.com/spec-kit-m365/spec-kit-m365"
+  license: "MIT"
+  homepage: "https://github.com/spec-kit-m365/spec-kit-m365"
+
+requires:
+  speckit_version: ">=0.1.0"
+  tools:
+    - name: "m365"
+      version: ">=9.0.0"
+      required: true
+      description: "CLI for Microsoft 365 — used for Teams message and meeting transcript retrieval"
+
+provides:
+  commands:
+    - name: "speckit.m365.thread"
+      file: "commands/thread.md"
+      description: "Pull a Teams channel thread or conversation, summarize decisions and requirements, and generate a Spec Kit specification"
+      aliases: ["speckit.thread"]
+
+    - name: "speckit.m365.meeting"
+      file: "commands/meeting.md"
+      description: "Pull a Teams meeting transcript, extract decisions and action items, and generate a Spec Kit specification"
+      aliases: ["speckit.meeting"]
+
+  config:
+    - name: "m365-config.yml"
+      template: "m365-config.template.yml"
+      description: "Microsoft 365 integration configuration — Teams organization, default channels, and output settings"
+      required: false
+
+tags:
+  - "microsoft-365"
+  - "teams"
+  - "meetings"
+  - "transcripts"
+  - "collaboration"
+  - "extraction"
+  - "summarization"

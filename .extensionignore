@@ -1,0 +1,14 @@
+# Files to exclude when packaging the extension for distribution.
+# These files are not needed by end users.
+
+.git/
+.github/
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+*.tmp
+*.vtt
+node_modules/
+m365-config.yml
