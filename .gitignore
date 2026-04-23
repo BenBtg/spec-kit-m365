@@ -18,6 +18,9 @@ m365-config.yml
 # Node (if using any tooling)
 node_modules/
 
+# Spec Kit project data (test output, not part of the extension)
+.specify/
+
 # Temp files
 *.tmp
 *.vtt
