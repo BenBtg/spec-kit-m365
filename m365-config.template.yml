@@ -6,6 +6,20 @@
 # and fill in your organization-specific values.
 # ============================================================================
 
+# Entra ID (Azure AD) app registration for M365 CLI authentication.
+# Required for single-tenant apps; optional for multi-tenant apps.
+# Create an app at https://entra.microsoft.com > App registrations.
+# Required delegated permissions: User.Read, Team.ReadBasic.All,
+# Channel.ReadBasic.All, ChannelMessage.Read.All, TeamMember.Read.All,
+# OnlineMeetingTranscript.Read.All, Calendars.Read
+auth:
+  # appId: ""
+  # tenantId: ""
+
+  # Authentication type. Options: "deviceCode", "browser", "certificate", "secret"
+  # Use "deviceCode" for interactive login in terminals without browser access.
+  authType: "deviceCode"
+
 # Default team and channel for thread-based commands.
 # These are used when no --teamId or --channelId is provided to the command.
 # You can find IDs by running:

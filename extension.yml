@@ -20,6 +20,11 @@ requires:
 
 provides:
   commands:
+    - name: "speckit.m365.setup"
+      file: "commands/setup.md"
+      description: "Set up the spec-kit-m365 extension — verify prerequisites, configure authentication, and create your m365-config.yml"
+      aliases: ["speckit.setup.m365"]
+
     - name: "speckit.m365.thread"
       file: "commands/thread.md"
       description: "Pull a Teams channel thread or conversation, summarize decisions and requirements, and generate a Spec Kit specification"
