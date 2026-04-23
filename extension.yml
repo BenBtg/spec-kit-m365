@@ -18,6 +18,13 @@ requires:
       required: true
       description: "CLI for Microsoft 365 — used for Teams message and meeting transcript retrieval"
 
+  # Delegated permissions required on the Entra ID app registration.
+  # Thread command (minimum): User.Read, Team.ReadBasic.All, Channel.ReadBasic.All,
+  #   ChannelMessage.Read.All, TeamMember.Read.All
+  # Meeting command (additional): Calendars.Read, OnlineMeetingTranscript.Read.All
+  # Note: Meeting discovery requires an Exchange Online mailbox on the user's account.
+  # All permissions require admin consent.
+
 provides:
   commands:
     - name: "speckit.m365.setup"

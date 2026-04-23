@@ -160,9 +160,15 @@ m365 teams team list --joined -o json
 - **If it fails with a permission error:** Tell the user:
   > ❌ Permission check failed. Your app registration may be missing required delegated permissions.
   >
-  > Required permissions: `User.Read`, `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `TeamMember.Read.All`
+  > **Thread command (minimum):**
+  > `User.Read`, `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `TeamMember.Read.All`
   >
-  > For meeting transcripts, also add: `OnlineMeetingTranscript.Read.All`, `Calendars.Read`
+  > **Meeting command (additional):**
+  > `Calendars.Read`, `OnlineMeetings.Read`, `OnlineMeetingTranscript.Read.All`
+  >
+  > **Optional (meeting discovery fallback):** `Chat.Read`
+  >
+  > **Note:** Calendar-based meeting discovery also requires an Exchange Online mailbox on the user's account. Developer/test tenants without Exchange Online licenses will need to use `OnlineMeetings.Read` or provide meeting IDs manually.
   >
   > Grant these in the Azure/Entra portal under your app registration > API permissions, then have an admin click "Grant admin consent."
 

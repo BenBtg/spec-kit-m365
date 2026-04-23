@@ -51,23 +51,36 @@ The user may provide a meeting ID inline with the command invocation. Parse the 
 
 **If `meetingId` is provided:** use it directly.
 
-**If not provided:** The M365 CLI does not have a "list all meetings" command. Help the user find their meeting ID:
+**If not provided:** Try the following discovery methods in order. Each may fail due to missing permissions or licensing — move to the next if one fails.
 
-> I need a meeting ID to retrieve the transcript. You can find it by:
->
-> 1. **From a Teams meeting URL:** The meeting ID is the base64-encoded string in the URL after `/meetingjoin/`. Copy the full encoded string.
->
-> 2. **From your calendar:** I can query your recent calendar events to find meetings with transcripts. Want me to try that?
+**Method 1 — M365 CLI meeting list** (requires `Calendars.Read` + Exchange Online mailbox):
 
-If the user asks to query their calendar, run:
+Compute a start date (30 days ago or from the config `since` value) and run:
 ```bash
-m365 request --url "@graphbeta/me/calendarView?startDateTime=$(date -u -v-30d '+%Y-%m-%dT00:00:00Z')&endDateTime=$(date -u '+%Y-%m-%dT23:59:59Z')&\$filter=isOnlineMeeting eq true&\$select=subject,start,end,onlineMeeting&\$orderby=start/dateTime desc&\$top=20" -o json
+m365 teams meeting list --startDateTime <START_DATE_ISO> --endDateTime <END_DATE_ISO> -o json
 ```
 
-Display the list of recent online meetings with their subjects and dates, then ask:
+> **Important:** Do NOT use `--email`, `--userId`, or `--userName` flags — these only work with application permissions, not delegated (device code) authentication.
+
+If this returns **"The mailbox is either inactive, soft-deleted, or is hosted on-premise"**, the user's account has no Exchange Online mailbox. This is common in test/developer tenants. Move to Method 2.
+
+If successful, display the list of recent online meetings with their subjects and dates, then ask:
 > Which meeting would you like to pull the transcript for?
 
-Extract the `onlineMeeting.joinUrl` from the selected meeting and derive the meeting ID, or use the `onlineMeetingId` if available directly.
+Extract the meeting ID from the selected meeting's `id` field.
+
+**Method 2 — Manual fallback:**
+
+All meeting discovery methods in the M365 CLI and Microsoft Graph ultimately require an Exchange Online mailbox. If the user's account doesn't have one, tell the user:
+> ⚠️ I couldn't discover meetings automatically. Your account does not have an Exchange Online mailbox, which is required for meeting discovery.
+>
+> **Options:**
+> 1. **Provide the meeting ID directly.** You can find it from:
+>    - **Teams meeting URL:** The meeting ID is the base64-encoded string after `/meetingjoin/` in the join URL
+>    - **Teams app:** Open the meeting → click meeting info/details → copy the join link
+>    - **Outlook calendar:** Open the meeting event → look for the join URL in the body
+> 2. **Add an Exchange Online license** to your account in the Microsoft 365 admin center, then retry.
+> 3. **Use a production tenant** that has Exchange Online included in its licensing.
 
 ### 1b. Confirm with the user
 
@@ -382,9 +395,13 @@ If there are open questions or low-confidence decisions, recommend:
 
 - **M365 CLI not found:** Direct user to install with `npm install -g @pnp/cli-microsoft365`
 - **Not authenticated:** Direct user to run `m365 login`
+- **Calendar 404 (no mailbox):** The user's account does not have an Exchange Online mailbox. This is common in developer/test tenants. Meeting discovery falls back to the Online Meetings API or manual meeting ID entry.
+- **Online Meetings 403:** The app registration is missing the `OnlineMeetings.Read` delegated permission. Direct the user to add it in the Azure/Entra portal and grant admin consent.
+- **Chat 403:** The app registration is missing the `Chat.Read` delegated permission. This is an optional discovery method — other methods may still work.
 - **No transcripts found:** Explain that transcription must be enabled during the meeting
-- **Permission denied:** Meeting transcript access requires either:
+- **Transcript permission denied:** Meeting transcript access requires either:
   - Being the meeting organizer, or
+  - Having `OnlineMeetingTranscript.Read.All` delegated permission, or
   - Having application permissions with an application access policy configured by a tenant admin
 - **Rate limiting:** If M365 CLI returns a throttling error, wait 30 seconds and retry once
 - **VTT parse failure:** If the transcript file format is unexpected, display the raw content and attempt best-effort extraction
@@ -394,6 +411,8 @@ If there are open questions or low-confidence decisions, recommend:
 ## Notes
 
 - The meeting transcript API is currently in **preview** in Microsoft Graph. Behavior may change.
+- **Exchange Online mailbox required for meeting discovery:** The `m365 teams meeting list` command and all Graph calendar/meeting APIs require the user to have an Exchange Online mailbox. Developer/test tenants without Exchange Online licenses cannot discover meetings automatically — the user must provide the meeting ID manually.
+- **Required permissions for meeting discovery:** `Calendars.Read` (delegated). For transcripts: `OnlineMeetingTranscript.Read.All`. The `--email`/`--userId`/`--userName` flags on `m365 teams meeting list` only work with application permissions, not delegated auth.
 - Transcript quality depends on audio quality, speaker clarity, and language settings during the meeting. Names may be misattributed if speaker identification was imperfect.
 - For meetings with multiple distinct topics, consider running this command multiple times — once per topic — and editing the meeting ID or asking the agent to focus on a specific time range or topic.
 - This command generates a **draft** specification. The user should review and refine it, then run `/speckit.clarify` to resolve open questions and `/speckit.plan` to create an implementation plan.
