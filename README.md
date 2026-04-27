@@ -175,13 +175,15 @@ m365 login
 m365 status
 ```
 
-### 3. Optional: markitdown (for binary file conversion)
+### 3. Optional: markitdown (for enhanced formatting)
 
-Required by `fetch-file` when converting binary formats such as PDF or DOCX:
+Not required, but improves formatting for HTML content:
 
 ```bash
 pip install 'markitdown[all]'
 ```
+
+When installed, `fetch-message` automatically uses markitdown to convert HTML from Teams and email into richer Markdown. Without it, HTML is normalized with basic tag stripping. `fetch-file` uses markitdown for binary format conversion.
 
 ### 4. Spec Kit
 

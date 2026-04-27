@@ -121,13 +121,27 @@ If no content is returned, stop and tell the user no message was found for that 
 
 ### 2c. Normalize content to Markdown-safe text
 
+Check for markitdown availability:
+
+```bash
+if command -v markitdown &> /dev/null; then
+  MARKITDOWN_AVAILABLE=true
+else
+  MARKITDOWN_AVAILABLE=false
+fi
+```
+
 For Teams:
 - Extract `createdDateTime`, sender display name, message `id`, and `body.content`.
-- If `body.contentType` is `html`, strip HTML tags while preserving readable text and mentions.
+- If `body.contentType` is `html`:
+  - If markitdown is available: pipe the HTML content through `markitdown` to convert to Markdown
+  - If markitdown is not available: strip HTML tags using regex/sed while preserving readable text and mentions
 
 For email:
 - Extract `subject`, `from.emailAddress.address`, `toRecipients`, `ccRecipients`, `receivedDateTime`, and body.
-- If body is HTML, strip HTML tags while preserving readable text.
+- If body is HTML:
+  - If markitdown is available: pipe through `markitdown` for richer formatting
+  - If markitdown is not available: strip HTML tags while preserving readable text
 
 Security check:
 - Do not include access tokens, auth headers, tenant secrets, or CLI config secrets.
@@ -213,4 +227,5 @@ Display:
 
 - Least-privilege delegated permissions for Teams fetch: `User.Read`, `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `TeamMember.Read.All`.
 - Least-privilege delegated permission for email fetch: `Mail.Read`.
+- **markitdown is optional:** If installed (`pip install markitdown[all]`), it will be automatically used to convert HTML content to richer Markdown. Without it, HTML tags are stripped using regex normalization.
 - This command is ingestion-only and must not generate a spec.
