@@ -5,6 +5,19 @@ All notable changes to spec-kit-m365 will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-04-27
+
+### Changed
+
+- Refactored extension architecture to ingestion-first: M365 content is fetched and saved as Markdown, with spec generation delegated to `speckit specify`
+- Replaced direct spec-generation commands with:
+  - `/speckit.m365.fetch-message`
+  - `/speckit.m365.fetch-file`
+  - `/speckit.m365.fetch-transcript`
+- Updated `extension.yml`, command prompts, and README to mirror markitdown-style separation of concerns
+- Added explicit next-step guidance in each command prompt to run `speckit specify` on the saved Markdown
+- Added explicit workspace-safe output path checks and no-token-leak requirements in fetch commands
+
 ## [1.0.0] - 2026-04-13
 
 ### Added

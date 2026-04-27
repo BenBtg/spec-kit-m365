@@ -11,7 +11,8 @@
 # Create an app at https://entra.microsoft.com > App registrations.
 # Required delegated permissions: User.Read, Team.ReadBasic.All,
 # Channel.ReadBasic.All, ChannelMessage.Read.All, TeamMember.Read.All,
-# OnlineMeetingTranscript.Read.All, Calendars.Read
+# OnlineMeetingTranscript.Read.All, Calendars.Read, Mail.Read,
+# Files.Read, Sites.Read.All
 auth:
   # appId: ""
   # tenantId: ""
@@ -20,7 +21,7 @@ auth:
   # Use "deviceCode" for interactive login in terminals without browser access.
   authType: "deviceCode"
 
-# Default team and channel for thread-based commands.
+# Default team and channel for Teams message fetch commands.
 # These are used when no --teamId or --channelId is provided to the command.
 # You can find IDs by running:
 #   m365 teams team list --joined -o json
@@ -36,14 +37,10 @@ defaults:
   # M365 CLI supports up to 8 months of history.
   since: "7d"
 
-# Output settings for generated specifications.
+# Output settings for fetched Markdown artifacts.
 output:
-  # Directory where specs are created (relative to project root).
+  # Directory where fetched Markdown files are written (relative to project root).
   specDirectory: ".specify/specs/"
-
-  # Set to "auto" to detect the next available spec number,
-  # or specify a number to use as the prefix (e.g., "042").
-  specNumber: "auto"
 
 # Meeting-specific settings.
 meetings:

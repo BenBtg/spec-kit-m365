@@ -160,15 +160,16 @@ m365 teams team list --joined -o json
 - **If it fails with a permission error:** Tell the user:
   > ❌ Permission check failed. Your app registration may be missing required delegated permissions.
   >
-  > **Thread command (minimum):**
+  > **Fetch message command (Teams minimum):**
   > `User.Read`, `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `TeamMember.Read.All`
   >
-  > **Meeting command (additional):**
-  > `Calendars.Read`, `OnlineMeetings.Read`, `OnlineMeetingTranscript.Read.All`
+  > **Fetch transcript command (additional):**
+  > `Calendars.Read`, `OnlineMeetingTranscript.Read.All`
   >
-  > **Optional (meeting discovery fallback):** `Chat.Read`
+  > **Fetch file command (additional):**
+  > `Files.Read` (OneDrive) and `Sites.Read.All` (SharePoint)
   >
-  > **Note:** Calendar-based meeting discovery also requires an Exchange Online mailbox on the user's account. Developer/test tenants without Exchange Online licenses will need to use `OnlineMeetings.Read` or provide meeting IDs manually.
+  > **Note:** Calendar-based meeting discovery also requires an Exchange Online mailbox on the user's account. Developer/test tenants without Exchange Online licenses may need to provide meeting IDs manually.
   >
   > Grant these in the Azure/Entra portal under your app registration > API permissions, then have an admin click "Grant admin consent."
 
@@ -189,6 +190,10 @@ Display a setup summary:
    • Message lookback: <since>
 
 🚀 You're ready to go! Try:
-   • /speckit.m365.thread — Convert a Teams thread into a spec
-   • /speckit.m365.meeting — Convert a meeting transcript into a spec
+  • /speckit.m365.fetch-message — Fetch Teams or email content as Markdown
+  • /speckit.m365.fetch-file — Fetch SharePoint/OneDrive files as Markdown
+  • /speckit.m365.fetch-transcript — Fetch meeting transcripts as Markdown
+
+💡 Next Step:
+  After fetch, run `speckit specify <saved-markdown-file>` to generate a spec with presets.
 ```

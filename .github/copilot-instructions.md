@@ -2,16 +2,19 @@
 
 ## Project Overview
 
-This is a **Spec Kit extension** (not a standalone app) that converts Microsoft Teams conversations and meeting transcripts into structured feature specifications. It has no build system, no tests, and no runtime code — the "commands" are markdown instruction files (`commands/*.md`) that AI agents execute step-by-step.
+This is a **Spec Kit extension** (not a standalone app) that ingests Microsoft 365 content and normalizes it to local Markdown files. It has no build system, no tests, and no runtime code — the "commands" are markdown instruction files (`commands/*.md`) that AI agents execute step-by-step.
 
-The extension provides two commands via the Spec Kit framework:
-- `/speckit.m365.thread` → Teams channel thread → spec
-- `/speckit.m365.meeting` → Meeting transcript → spec
+The extension provides three ingestion commands via the Spec Kit framework:
+- `/speckit.m365.fetch-message` → Teams message thread or email → Markdown
+- `/speckit.m365.fetch-file` → SharePoint/OneDrive file → Markdown
+- `/speckit.m365.fetch-transcript` → Meeting transcript → Markdown
+
+Spec generation happens separately via `speckit specify` using the saved Markdown file as input.
 
 ## Architecture
 
 - **`extension.yml`** — Extension manifest declaring commands, dependencies, config schema, and required Spec Kit version (>=0.1.0). This is the entry point the Spec Kit framework reads.
-- **`commands/thread.md` / `commands/meeting.md`** — AI agent instruction files. Each is a multi-step procedure (pre-flight checks → data retrieval → analysis → spec generation) that an AI agent follows literally. These are the core "source code" of the extension.
+- **`commands/fetch-message.md` / `commands/fetch-file.md` / `commands/fetch-transcript.md`** — AI agent instruction files. Each is a multi-step procedure (pre-flight checks → data retrieval → markdown output) that an AI agent follows literally. These are the core "source code" of the extension.
 - **`m365-config.template.yml`** — Configuration template users copy to `.specify/extensions/m365/m365-config.yml` in their projects.
 - **`docs/examples/`** — Sample inputs/outputs for documentation.
 
@@ -23,14 +26,14 @@ The markdown files in `commands/` are structured as numbered steps (Step 0, Step
 ### M365 CLI is the data layer
 All Microsoft 365 interaction goes through the [CLI for Microsoft 365](https://pnp.github.io/cli-microsoft365/) (`m365` command). Commands always output JSON (`-o json`). The extension never calls Microsoft Graph directly.
 
-### Spec output format
-Generated specs follow a specific structure: YAML frontmatter with source traceability metadata, user stories with P1/P2/P3 priorities, functional requirements with FR-NNN IDs, Given/When/Then acceptance criteria, and open questions. The meeting command additionally produces a decisions log (with High/Medium/Low confidence) and action items table.
+### Ingest-first output format
+Each command outputs a Markdown artifact with YAML frontmatter source metadata and normalized content body. Commands must end after writing Markdown and reporting the output path.
 
-### Spec template resolution
-Both commands resolve the spec template in this order: local `.specify/templates/spec-template.md` → remote GitHub fetch → built-in fallback. This three-tier approach must be preserved.
+### No direct spec generation
+Commands in this extension do not generate specs and do not apply presets. The next step is always `speckit specify <saved-markdown-file>`.
 
 ### Configuration cascading
-Parameters resolve as: user-provided inline args → `m365-config.yml` defaults → interactive prompting. Both commands follow this same pattern.
+Parameters resolve as: user-provided inline args → `m365-config.yml` defaults → interactive prompting. All ingestion commands follow this pattern.
 
-### Spec numbering
-Specs are created at `.specify/specs/<NNN>-<feature-name>/spec.md` where NNN is auto-incremented by scanning existing folders, zero-padded to 3 digits.
+### Output safety
+Commands must enforce workspace-safe output paths, avoid writing outside the workspace, and never include credentials/tokens in output files.

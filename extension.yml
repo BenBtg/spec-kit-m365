@@ -4,7 +4,7 @@ extension:
   id: "m365"
   name: "Microsoft 365 Integration"
   version: "1.0.0"
-  description: "Convert Microsoft Teams conversations and meeting transcripts into structured Spec Kit specifications using AI-powered summarization."
+  description: "Fetch Microsoft 365 content and normalize it to Markdown for later spec generation with Spec Kit presets."
   author: "spec-kit-m365"
   repository: "https://github.com/spec-kit-m365/spec-kit-m365"
   license: "MIT"
@@ -32,15 +32,20 @@ provides:
       description: "Set up the spec-kit-m365 extension — verify prerequisites, configure authentication, and create your m365-config.yml"
       aliases: ["speckit.setup.m365"]
 
-    - name: "speckit.m365.thread"
-      file: "commands/thread.md"
-      description: "Pull a Teams channel thread or conversation, summarize decisions and requirements, and generate a Spec Kit specification"
-      aliases: ["speckit.thread"]
+    - name: "speckit.m365.fetch-message"
+      file: "commands/fetch-message.md"
+      description: "Fetch a Teams channel message thread (or email) and save it as Markdown in the spec directory"
+      aliases: ["speckit.fetch-message"]
 
-    - name: "speckit.m365.meeting"
-      file: "commands/meeting.md"
-      description: "Pull a Teams meeting transcript, extract decisions and action items, and generate a Spec Kit specification"
-      aliases: ["speckit.meeting"]
+    - name: "speckit.m365.fetch-file"
+      file: "commands/fetch-file.md"
+      description: "Fetch a SharePoint or OneDrive file, convert to Markdown when needed, and save it in the spec directory"
+      aliases: ["speckit.fetch-file"]
+
+    - name: "speckit.m365.fetch-transcript"
+      file: "commands/fetch-transcript.md"
+      description: "Fetch a Teams meeting transcript and save it as Markdown in the spec directory"
+      aliases: ["speckit.fetch-transcript"]
 
   config:
     - name: "m365-config.yml"
@@ -55,4 +60,4 @@ tags:
   - "transcripts"
   - "collaboration"
   - "extraction"
-  - "summarization"
+  - "ingestion"
