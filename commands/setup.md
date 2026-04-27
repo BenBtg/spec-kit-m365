@@ -160,18 +160,18 @@ m365 teams team list --joined -o json
 - **If it fails with a permission error:** Tell the user:
   > ❌ Permission check failed. Your app registration may be missing required delegated permissions.
   >
-  > **Fetch message command (Teams minimum):**
-  > `User.Read`, `Team.ReadBasic.All`, `Channel.ReadBasic.All`, `ChannelMessage.Read.All`, `TeamMember.Read.All`
+  > See the **README.md > Entra Permissions** section for a complete guide:
+  > - List of all required permissions by command
+  > - Step-by-step Entra portal walkthrough to add permissions
+  > - Troubleshooting for common permission errors
   >
-  > **Fetch transcript command (additional):**
-  > `Calendars.Read`, `OnlineMeetingTranscript.Read.All`
+  > After granting permissions in the Entra portal, you must log out and back in:
+  > ```bash
+  > m365 logout
+  > m365 login
+  > ```
   >
-  > **Fetch file command (additional):**
-  > `Files.Read` (OneDrive) and `Sites.Read.All` (SharePoint)
-  >
-  > **Note:** Calendar-based meeting discovery also requires an Exchange Online mailbox on the user's account. Developer/test tenants without Exchange Online licenses may need to provide meeting IDs manually.
-  >
-  > Grant these in the Azure/Entra portal under your app registration > API permissions, then have an admin click "Grant admin consent."
+  > Then re-run this setup command.
 
 ---
 
