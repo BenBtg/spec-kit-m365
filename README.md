@@ -175,17 +175,7 @@ m365 login
 m365 status
 ```
 
-### 3. Optional: markitdown (for enhanced formatting)
-
-Not required, but improves formatting for HTML content:
-
-```bash
-pip install 'markitdown[all]'
-```
-
-When installed, `fetch-message` automatically uses markitdown to convert HTML from Teams and email into richer Markdown. Without it, HTML is normalized with basic tag stripping. `fetch-file` uses markitdown for binary format conversion.
-
-### 4. Spec Kit
+### 3. Spec Kit
 
 Requires Spec Kit `>=0.1.0`.
 
@@ -298,7 +288,7 @@ Once saved, use that Markdown file as input to `speckit specify` to generate a s
 | Teams history cap | M365 CLI Teams message retrieval is limited to the recent history window available via API |
 | Transcript availability | Transcripts only exist when recording/transcription was enabled |
 | Meeting discovery dependency | Calendar-based meeting discovery requires an Exchange Online mailbox |
-| Binary file conversion | `fetch-file` needs `markitdown` for binary formats |
+| Binary file conversion | For richer document conversion (PDF, Word, etc.), compose this extension with `spec-kit-markitdown` via a Spec Kit workflow |
 
 ---
 

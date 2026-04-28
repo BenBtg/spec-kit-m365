@@ -29,21 +29,6 @@ m365 status -o json
 
 If not authenticated, stop and instruct the user to run `m365 login`.
 
-### 0c. Verify conversion tool availability when needed
-
-Check whether `markitdown` exists:
-
-```bash
-markitdown --version
-```
-
-If `markitdown` is unavailable, continue only for plain-text markdown-friendly formats (`.md`, `.txt`, `.csv`, `.json`, `.xml`, `.html`).
-For binary formats (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images, audio), stop and ask the user to install markitdown:
-
-```bash
-pip install 'markitdown[all]'
-```
-
 ---
 
 ## Step 1 — Resolve File Target and Output Path
@@ -104,9 +89,10 @@ If download fails, report the exact failure reason and stop.
 
 ### 2b. Detect file type
 
-Use file extension and content sniffing to classify as:
-- Markdown-friendly text
-- Binary document requiring conversion
+Use file extension to classify the file:
+- **Text formats** (`.md`, `.txt`, `.csv`, `.json`, `.xml`, `.html`): proceed to Step 3.
+- **Binary formats** (`.pdf`, `.docx`, `.pptx`, `.xlsx`, images, audio): stop and tell the user:
+  > This file is a binary format that cannot be converted to Markdown directly. For richer document conversion, compose this extension with `spec-kit-markitdown` via a Spec Kit workflow.
 
 Security check:
 - Never write auth tokens, cookies, headers, or CLI credential data into output Markdown.
@@ -117,15 +103,9 @@ Security check:
 
 ### 3a. Convert content to Markdown
 
-If text format:
-- normalize to UTF-8
-- preserve headings/tables where possible
-
-If binary format:
-
-```bash
-markitdown "<TEMP_FILE>" -o "<OUTPUT_PATH>"
-```
+- Normalize to UTF-8
+- If HTML, strip tags while preserving readable text structure
+- Preserve headings/tables where possible
 
 ### 3b. Add source metadata header
 
@@ -164,7 +144,7 @@ Display:
 📊 Summary:
    • Source: <sharepoint|onedrive>
    • File reference: <fileWebUrl|fileId>
-   • Conversion: <direct text|markitdown>
+   • Conversion: direct text
 
 💡 Next Step:
    Once saved, use this file as input to `speckit specify` to generate a specification with your presets applied.
